@@ -1,54 +1,90 @@
 import './App.css'
 
+import { useState } from 'react'
+import { useEffect } from 'react'
+import heroImg from './assets/hero.png'
+import Sidebar from './components/Sidebar'
+import Header from './components/Header'
+import StatCard from './components/StatCard'
+import Alerts from './components/Alerts'
+import RecentActivities from './components/RecentActivities'
+import QuarterObjectives from './components/QuarterObjectives'
+//import CORSMiddleware from fastapi.middleware.cors
+
+//app = FastAPI(title="CookBook API")
+/*app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)*/
 function App() {
+  const [dashboard, setDashboard] = useState(null);
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/dashboard")
+      .then((response) => response.json())
+      .then((data) => {
+        setDashboard(data);
+      })
+      .catch((error) => {
+        console.error("Erreur :", error);
+      });
+  }, []);
   return (
+     
     <div className="app">
-      <header className="header">
-        <div className="logo">
-          Cook<span>Book</span>
-        </div>
-
-        <nav className="navigation">
-          <a href="#dashboard">Dashboard</a>
-          <a href="#drilling">Drilling</a>
-          <a href="#blasting">Blasting</a>
-          <a href="#reports">Reports</a>
-        </nav>
-
-        <div className="user-section">
-          <span className="user-name">User</span>
-          <button className="logout-button">Logout</button>
-        </div>
-      </header>
+    
+      <Sidebar />
 
       <main className="main-content">
-        <section className="welcome-section">
-          <p className="welcome-label">COOKBOOK</p>
-          <h1>Welcome to CookBook</h1>
-          <p className="welcome-text">
-            Drill & Blast monitoring and analysis platform
-          </p>
+
+        <Header />
+
+        <section className="dashboard">
+
+          <StatCard
+            title="Total tirs"
+            value="42"
+            description="+12 % vs mois précédent"
+          />
+
+          <StatCard
+            title="Tirs clôturés"
+            value="35"
+          />
+
+          <StatCard
+            title="Réalisés prêts"
+            value="8"
+          />
+
+          <StatCard
+            title="Alertes"
+            value="0"
+          />
+
         </section>
+          {/* Contenu du Dashboard */}
+        <section className="dashboard-grid">
 
-        <section className="dashboard-cards">
-          <div className="card">
-            <h2>Drilling</h2>
-            <p>Monitor drilling operations and performance.</p>
+          <div>
+            <Alerts />
+            <RecentActivities />
           </div>
 
-          <div className="card">
-            <h2>Blasting</h2>
-            <p>Analyze blasting operations and results.</p>
+          <div>
+            <QuarterObjectives />
           </div>
 
-          <div className="card">
-            <h2>Reports</h2>
-            <p>View and generate operational reports.</p>
-          </div>
         </section>
       </main>
+
     </div>
   )
 }
 
 export default App
+
+
+
