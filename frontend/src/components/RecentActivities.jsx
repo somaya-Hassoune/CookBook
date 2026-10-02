@@ -1,55 +1,69 @@
-function RecentActivities() {
+
+import { useState } from 'react'
+
+function RecentActivities({ activites }) {
+  const [showAll, setShowAll] = useState(false)
+
+  const activitiesToDisplay = showAll
+    ? activites
+    : activites.slice(0, 5)
+
   return (
     <section className="dashboard-section">
+
       <div className="section-header">
         <h3>Activités récentes</h3>
-        <span>Voir tout</span>
+
+        {activites.length > 5 && (
+          <button
+            className="view-all"
+            onClick={() => setShowAll(!showAll)}
+          >
+            {showAll ? "Réduire" : "Voir tout"}
+          </button>
+        )}
       </div>
 
       <div className="activity-list">
 
-        <div className="activity-item">
-          <div className="activity-icon">
-            +
-          </div>
+        {activites.length === 0 ? (
+          <p>Aucune activité récente.</p>
+        ) : (
+          activitiesToDisplay.map((activite, index) => (
+            <div className="activity-item" key={index}>
 
-          <div>
-            <strong>Nouveau dossier créé</strong>
-            <p>TIR-BG-2026-044</p>
-          </div>
+              <div className="activity-icon">
+                ✓
+              </div>
 
-          <span>Il y a 10 min</span>
-        </div>
+              <div>
+                <strong>
+                  {activite.action || activite.type || "Activité"}
+                </strong>
 
-        <div className="activity-item">
-          <div className="activity-icon">
-            ✓
-          </div>
+                <p>
+                  {activite.tir ||
+                    activite.blast ||
+                    activite.code ||
+                    ""}
+                </p>
+              </div>
 
-          <div>
-            <strong>Tir clôturé</strong>
-            <p>TIR-BG-2026-043</p>
-          </div>
+              <span>
+                {activite.date || ""}
+              </span>
 
-          <span>Il y a 1 h</span>
-        </div>
-
-        <div className="activity-item">
-          <div className="activity-icon">
-            ✓
-          </div>
-
-          <div>
-            <strong>Contrôle terminé</strong>
-            <p>TIR-BG-2026-042</p>
-          </div>
-
-          <span>Il y a 2 h</span>
-        </div>
+            </div>
+          ))
+        )}
 
       </div>
+
     </section>
   )
 }
 
 export default RecentActivities
+
+
+

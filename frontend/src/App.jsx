@@ -45,23 +45,23 @@ function App() {
 
           <StatCard
             title="Total tirs"
-            value="42"
+            value={dashboard ? dashboard.totalTirs : "..."}
             description="+12 % vs mois précédent"
           />
 
           <StatCard
             title="Tirs clôturés"
-            value="35"
+            value={dashboard ? dashboard.tirsClotures : "..."}
           />
 
           <StatCard
             title="Réalisés prêts"
-            value="8"
+            value={dashboard ? dashboard.readiness : "..."}
           />
 
           <StatCard
             title="Alertes"
-            value="0"
+            value={dashboard ? dashboard.alertes.length : "..."}
           />
 
         </section>
@@ -69,8 +69,8 @@ function App() {
         <section className="dashboard-grid">
 
           <div>
-            <Alerts />
-            <RecentActivities />
+            <Alerts alertes={dashboard ? dashboard.alertes : []}/>
+            <RecentActivities activites={dashboard ? dashboard.activitesRecentes : []}/>
           </div>
 
           <div>

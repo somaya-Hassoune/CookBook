@@ -72,7 +72,7 @@ def get_dashboard():
         audit,
         key=lambda activite: activite.get("date", ""),
         reverse=True
-    )[:5]
+    )
     return {
         "totalTirs": total_tirs,
         "tirsClotures": tirs_clotures,

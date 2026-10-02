@@ -1,34 +1,45 @@
-function Alerts() {
+import { useState } from 'react'
+
+function Alerts({ alertes }) {
+  const [showAll, setShowAll] = useState(false)
+
+  const alertesToDisplay = showAll
+    ? alertes
+    : alertes.slice(0, 5)
   return (
     <section className="dashboard-section">
       <div className="section-header">
         <h3>Alertes</h3>
-        <span>Voir tout</span>
+        {alertes.length > 5 && (
+      <button
+        className="view-all"
+        onClick={() => setShowAll(!showAll)}
+      >
+        {showAll ? "Réduire" : "Voir tout"}
+      </button>
+    )}
       </div>
 
       <div className="alert-list">
 
-        <div className="alert-item">
-          <div>
-            <strong>Position des trous conforme au plan</strong>
-            <p>TIR-BG-2026-044</p>
-          </div>
+        {alertes.length === 0 ? (
+          <p>Aucune alerte actuellement.</p>
+        ) : (
+          alertesToDisplay.map((alerte, index) => (
+            <div className="alert-item" key={index}>
 
-          <span className="alert-status">
-            Conforme
-          </span>
-        </div>
+              <div>
+                <strong>{alerte.label}</strong>
+                <p>{alerte.tir}</p>
+              </div>
 
-        <div className="alert-item">
-          <div>
-            <strong>Vérification HSE</strong>
-            <p>TIR-BG-2026-043</p>
-          </div>
+              <span className="alert-status">
+                {alerte.status}
+              </span>
 
-          <span className="alert-status">
-            Conforme
-          </span>
-        </div>
+            </div>
+          ))
+        )}
 
       </div>
     </section>
@@ -36,3 +47,4 @@ function Alerts() {
 }
 
 export default Alerts
+
