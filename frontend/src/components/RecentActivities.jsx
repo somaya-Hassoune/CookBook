@@ -1,12 +1,11 @@
-
 import { useState } from 'react'
 
-function RecentActivities({ activites }) {
+function RecentActivities({ activities = [] }) {
   const [showAll, setShowAll] = useState(false)
 
   const activitiesToDisplay = showAll
-    ? activites
-    : activites.slice(0, 5)
+    ? activities
+    : activities.slice(0, 5)
 
   return (
     <section className="dashboard-section">
@@ -14,7 +13,7 @@ function RecentActivities({ activites }) {
       <div className="section-header">
         <h3>Activités récentes</h3>
 
-        {activites.length > 5 && (
+        {activities.length > 5 && (
           <button
             className="view-all"
             onClick={() => setShowAll(!showAll)}
@@ -26,11 +25,11 @@ function RecentActivities({ activites }) {
 
       <div className="activity-list">
 
-        {activites.length === 0 ? (
+        {activities.length === 0 ? (
           <p>Aucune activité récente.</p>
         ) : (
-          activitiesToDisplay.map((activite, index) => (
-            <div className="activity-item" key={index}>
+          activitiesToDisplay.map((activite) => (
+            <div className="activity-item" key={activite.id}>
 
               <div className="activity-icon">
                 ✓
@@ -38,19 +37,20 @@ function RecentActivities({ activites }) {
 
               <div>
                 <strong>
-                  {activite.action || activite.type || "Activité"}
+                  {activite.action || "Activité"}
                 </strong>
 
                 <p>
-                  {activite.tir ||
-                    activite.blast ||
-                    activite.code ||
-                    ""}
+                  {activite.object || ""}
                 </p>
+
+                <small>
+                  {activite.detail || ""}
+                </small>
               </div>
 
               <span>
-                {activite.date || ""}
+                {new Date(activite.date).toLocaleString("fr-FR")}
               </span>
 
             </div>

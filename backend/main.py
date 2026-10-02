@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import json
 
-app = FastAPI(title="CookBook API")
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
@@ -12,71 +12,115 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def load_data():
-    with open("data/cookbook.json", "r", encoding="utf-8") as file:
-        return json.load(file)
+with open("data/cookbook.json", "r", encoding="utf-8") as f:
+    data = json.load(f)
 
 
 @app.get("/")
 def root():
-    return {
-        "message": "Bienvenue dans l'API CookBook"
-    }
-
-
-@app.get("/data")
-def get_data():
-    data = load_data()
-    return data
+    return {"message": "CookBook API fonctionne"}
 
 
 @app.get("/dashboard")
-def get_dashboard():
-    data = load_data()
+def dashboard():
 
-    tirs = data["blasts"]
+    tirs = data.get("blasts", [])
 
     total_tirs = len(tirs)
 
-    tirs_clotures = sum(
-        1 for tir in tirs
+    tirs_clotures = [
+        tir for tir in tirs
         if tir.get("status") == "Clôturé"
-    )
+    ]
 
-    readiness = sum(
-        1 for tir in tirs
+    readiness = [
+        tir for tir in tirs
         if tir.get("readiness", {}).get("authorized") is True
+    ]
+
+    kpi_total = 0
+    kpi_conformes = 0
+
+    for tir in tirs:
+        results = tir.get("results", {})
+        targets = tir.get("kpiTargets", {})
+
+        for kpi, value in results.items():
+
+            if value is None or kpi not in targets:
+                continue
+
+            target = targets[kpi]
+            conforme = True
+
+            if "Min" in kpi:
+                if value < target:
+                    conforme = False
+
+            elif kpi == "p50":
+                if value < targets.get("p50Min", value):
+                    conforme = False
+                if value > targets.get("p50Max", value):
+                    conforme = False
+
+            elif kpi == "p80":
+                if value > targets.get("p80Max", value):
+                    conforme = False
+
+            elif kpi == "digRate":
+                if value < targets.get("digRateMin", value):
+                    conforme = False
+
+            else:
+                if value > target:
+                    conforme = False
+
+            kpi_total += 1
+
+            if conforme:
+                kpi_conformes += 1
+
+    taux_kpi = (
+        round((kpi_conformes / kpi_total) * 100, 1)
+        if kpi_total > 0
+        else 0
     )
-     # Détection des alertes
+        # =========================
+    # ALERTES
+    # =========================
+
     alertes = []
 
     for tir in tirs:
-        for controle in tir.get("qa", []):
-
-            if (
-                controle.get("critical") is True
-                and controle.get("status") == "Non conforme"
-            ):
+        for qa in tir.get("qa", []):
+            if qa.get("status") == "Non conforme":
                 alertes.append({
-                    "tir": tir.get("code"),
-                    "label": controle.get("label"),
-                    "status": controle.get("status"),
-                    "measured": controle.get("measured"),
-                    "comment": controle.get("comment"),
-                    "action": controle.get("action")
+                    "label": qa.get("label", "Anomalie QA/QC"),
+                    "tir": tir.get("code", ""),
+                    "status": qa.get("status", ""),
+                    "measured": qa.get("measured", ""),
+                    "action": qa.get("action", ""),
+                    "critical": qa.get("critical", False)
                 })
-      # Activités récentes
-    audit = data.get("audit", [])
+
+    # =========================
+    # ACTIVITÉS RÉCENTES
+    # =========================
 
     activites_recentes = sorted(
-        audit,
-        key=lambda activite: activite.get("date", ""),
-        reverse=True
-    )
+    data.get("audit", []),
+    key=lambda x: x.get("date", ""),
+    reverse=True
+)
     return {
         "totalTirs": total_tirs,
-        "tirsClotures": tirs_clotures,
-        "readiness": readiness,
+        "tirsClotures": len(tirs_clotures),
+        "readiness": len(readiness),
+        "performanceKPI": {
+            "total": kpi_total,
+            "conformes": kpi_conformes,
+            "taux": taux_kpi
+        },
         "alertes": alertes,
-        "activitesRecentes": activites_recentes
+        "activitesRecentes": activites_recentes,
     }

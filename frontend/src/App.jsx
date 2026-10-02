@@ -61,7 +61,7 @@ function App() {
 
           <StatCard
             title="Alertes"
-            value={dashboard ? dashboard.alertes.length : "..."}
+            value={dashboard ? (dashboard.alertes?.length ?? 0) : "..."}
           />
 
         </section>
@@ -70,7 +70,7 @@ function App() {
 
           <div>
             <Alerts alertes={dashboard ? dashboard.alertes : []}/>
-            <RecentActivities activites={dashboard ? dashboard.activitesRecentes : []}/>
+            <RecentActivities activities={dashboard?.activitesRecentes ?? []}/>
           </div>
 
           <div>
