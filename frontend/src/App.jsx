@@ -46,7 +46,11 @@ function App() {
           <StatCard
             title="Total tirs"
             value={dashboard ? dashboard.totalTirs : "..."}
-            description="+12 % vs mois précédent"
+            description={
+              dashboard
+                ? `${dashboard.evolutionTirs > 0 ? "+" : ""}${dashboard.evolutionTirs} % vs mois précédent`
+                : ""
+            }
           />
 
           <StatCard

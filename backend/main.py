@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import json
+from datetime import datetime
 
 app = FastAPI()
 
@@ -27,7 +28,54 @@ def dashboard():
     tirs = data.get("blasts", [])
 
     total_tirs = len(tirs)
+        # =========================
+    # ÉVOLUTION DES TIRS
+    # =========================
 
+    
+
+    mois_actuel = max(
+        datetime.strptime(tir["date"], "%Y-%m-%d")
+        for tir in tirs
+    ).month
+
+    annee_actuelle = max(
+        datetime.strptime(tir["date"], "%Y-%m-%d")
+        for tir in tirs
+    ).year
+
+    tirs_mois_actuel = [
+        tir for tir in tirs
+        if tir["date"].startswith(
+            f"{annee_actuelle}-{mois_actuel:02d}"
+        )
+    ]
+
+    if mois_actuel == 1:
+        mois_precedent = 12
+        annee_precedente = annee_actuelle - 1
+    else:
+        mois_precedent = mois_actuel - 1
+        annee_precedente = annee_actuelle
+
+    tirs_mois_precedent = [
+        tir for tir in tirs
+        if tir["date"].startswith(
+            f"{annee_precedente}-{mois_precedent:02d}"
+        )
+    ]
+
+    nombre_actuel = len(tirs_mois_actuel)
+    nombre_precedent = len(tirs_mois_precedent)
+
+    evolution_tirs = (
+        round(
+            ((nombre_actuel - nombre_precedent) / nombre_precedent) * 100,
+            1
+        )
+        if nombre_precedent > 0
+        else None
+    )
     tirs_clotures = [
         tir for tir in tirs
         if tir.get("status") == "Clôturé"
@@ -170,6 +218,7 @@ def dashboard():
 )
     return {
         "totalTirs": total_tirs,
+        "evolutionTirs": evolution_tirs,
         "tirsClotures": len(tirs_clotures),
         "readiness": len(readiness),
         "performanceKPI": {
