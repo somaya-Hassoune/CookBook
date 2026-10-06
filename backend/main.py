@@ -38,42 +38,98 @@ def dashboard():
         if tir.get("readiness", {}).get("authorized") is True
     ]
 
+      # =========================
+    # PERFORMANCE KPI
+    # =========================
+
+    recipes_by_id = {
+        recipe.get("id"): recipe
+        for recipe in data.get("recipes", [])
+    }
+
     kpi_total = 0
     kpi_conformes = 0
 
     for tir in tirs:
+
         results = tir.get("results", {})
-        targets = tir.get("kpiTargets", {})
+
+        if not results:
+            continue
+
+        recipe = recipes_by_id.get(tir.get("recipeId"))
+
+        if not recipe:
+            continue
+
+        targets = recipe.get("kpiTargets", {})
 
         for kpi, value in results.items():
 
-            if value is None or kpi not in targets:
+            if value is None:
                 continue
 
-            target = targets[kpi]
             conforme = True
 
-            if "Min" in kpi:
-                if value < target:
-                    conforme = False
-
-            elif kpi == "p50":
-                if value < targets.get("p50Min", value):
-                    conforme = False
-                if value > targets.get("p50Max", value):
-                    conforme = False
+            if kpi == "p50":
+                conforme = (
+                    targets.get("p50Min", float("-inf"))
+                    <= value
+                    <= targets.get("p50Max", float("inf"))
+                )
 
             elif kpi == "p80":
-                if value > targets.get("p80Max", value):
-                    conforme = False
+                conforme = value <= targets.get(
+                    "p80Max", float("inf")
+                )
+
+            elif kpi == "oversize":
+                conforme = value <= targets.get(
+                    "oversizeMax", float("inf")
+                )
+
+            elif kpi == "toes":
+                conforme = value <= targets.get(
+                    "toesMax", float("inf")
+                )
 
             elif kpi == "digRate":
-                if value < targets.get("digRateMin", value):
-                    conforme = False
+                conforme = value >= targets.get(
+                    "digRateMin", float("-inf")
+                )
+
+            elif kpi == "ppv":
+                conforme = value <= targets.get(
+                    "ppvMax", float("inf")
+                )
+
+            elif kpi == "airblast":
+                conforme = value <= targets.get(
+                    "airblastMax", float("inf")
+                )
+
+            elif kpi == "flyrock":
+                conforme = value <= targets.get(
+                    "flyrockMax", float("inf")
+                )
+
+            elif kpi == "misfire":
+                conforme = value <= targets.get(
+                    "misfireMax", float("inf")
+                )
+
+            elif kpi == "dilution":
+                conforme = value <= targets.get(
+                    "dilutionMax", float("inf")
+                )
+
+            elif kpi == "cost":
+                conforme = value <= targets.get(
+                    "costMax", float("inf")
+                )
 
             else:
-                if value > target:
-                    conforme = False
+                continue
 
             kpi_total += 1
 

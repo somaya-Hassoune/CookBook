@@ -8,7 +8,7 @@ import Header from './components/Header'
 import StatCard from './components/StatCard'
 import Alerts from './components/Alerts'
 import RecentActivities from './components/RecentActivities'
-import QuarterObjectives from './components/QuarterObjectives'
+//import QuarterObjectives from './components/QuarterObjectives'
 //import CORSMiddleware from fastapi.middleware.cors
 
 //app = FastAPI(title="CookBook API")
@@ -74,7 +74,15 @@ function App() {
           </div>
 
           <div>
-            <QuarterObjectives />
+            <StatCard
+              title="Performance KPI"
+              value={dashboard ? `${dashboard.performanceKPI.taux} %` : "..."}
+              description={
+                dashboard
+                  ? `${dashboard.performanceKPI.conformes} / ${dashboard.performanceKPI.total} KPI conformes`
+                  : ""
+            }
+          />
           </div>
 
         </section>
