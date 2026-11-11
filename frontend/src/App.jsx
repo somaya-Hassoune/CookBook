@@ -9,6 +9,7 @@ import Header from './components/Header'
 import StatCard from './components/StatCard'
 import Alerts from './components/Alerts'
 import RecentActivities from './components/RecentActivities'
+import Horizons from './pages/Horizons'
 
 // Mise en page commune
 function Layout() {
@@ -147,15 +148,7 @@ function App() {
           }
         />
 
-        <Route
-          path="/horizons"
-          element={
-            <PlaceholderPage
-              title="Horizons"
-              description="Consulte les horizons, les niveaux et les zones."
-            />
-          }
-        />
+       <Route path="/horizons" element={<Horizons />} />
 
         <Route
           path="/zones"
