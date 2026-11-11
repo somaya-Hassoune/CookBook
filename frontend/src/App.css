@@ -46,6 +46,8 @@ body {
 
 .main-content {
   flex: 1;
+  min-width: 0;
+  width: 0;
   padding: 30px;
 }
 

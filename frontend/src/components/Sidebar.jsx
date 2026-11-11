@@ -7,6 +7,7 @@ function Sidebar() {
     { name: 'Tirs', path: '/tirs' },
     { name: 'Dossiers', path: '/dossiers' },
     { name: 'Horizons', path: '/horizons' },
+    { name: 'Performances', path: '/performances' },
     { name: 'Zone Classification', path: '/zones' },
   ]
 

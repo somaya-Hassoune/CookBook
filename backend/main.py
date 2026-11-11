@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import json
 from datetime import datetime
 from horizons_routes import router as horizons_router
+from performance_routes import router as performance_router
 
 app = FastAPI()
 
@@ -14,6 +15,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(horizons_router)
+app.include_router(performance_router)
 
 with open("data/cookbook.json", "r", encoding="utf-8") as f:
     data = json.load(f)

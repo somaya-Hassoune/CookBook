@@ -10,6 +10,7 @@ import StatCard from './components/StatCard'
 import Alerts from './components/Alerts'
 import RecentActivities from './components/RecentActivities'
 import Horizons from './pages/Horizons'
+import Performances from './pages/Performances'
 
 // Mise en page commune
 function Layout() {
@@ -149,6 +150,7 @@ function App() {
         />
 
        <Route path="/horizons" element={<Horizons />} />
+       <Route path="/performances" element={<Performances />} />
 
         <Route
           path="/zones"
